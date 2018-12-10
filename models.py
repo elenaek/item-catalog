@@ -1,4 +1,4 @@
-from sqlalchemy import Column,Integer,String
+from sqlalchemy import Column,Integer,String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
@@ -36,22 +36,22 @@ class Category(Base):
 	        }
 
 class Item(Base):
-	__tablename__ = 'item'
-	id = Column(Integer, primary_key=True)
-	title = Column(String)
+    __tablename__ = 'item'
+    id = Column(Integer, primary_key=True)
+    title = Column(String)
     description = Column(String)
     owner_id = Column(String, ForeignKey('user.id'))
     category_id = Column(String, ForeignKey('category.id'))
     user = relationship(User)
     category = relationship(Category)
 
-	@property
-	def serialize(self):
-	    """Return object data in easily serializeable format"""
-	    return {
-	    'title' = self.title,
-        'description' = self.description
-	        }
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+        return {
+        'title' : self.title,
+        'description' : self.description
+            }
 
 
 engine = create_engine('sqlite:///itemCatalog.db')
