@@ -38,10 +38,10 @@ class Category(Base):
 class Item(Base):
     __tablename__ = 'item'
     id = Column(Integer, primary_key=True)
-    title = Column(String)
+    name = Column(String)
     description = Column(String)
-    owner_id = Column(String, ForeignKey('user.id'))
-    category_id = Column(String, ForeignKey('category.id'))
+    owner_id = Column(Integer, ForeignKey('user.id'))
+    category_id = Column(Integer, ForeignKey('category.id'))
     user = relationship(User)
     category = relationship(Category)
 

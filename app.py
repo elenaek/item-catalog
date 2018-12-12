@@ -22,6 +22,13 @@ def mainPage():
     # items = session.query(MenuItem).filter_by(restaurant_id=restaurant.id)
     return render_template('main.html', categories=category)
 
+@app.route('/catalog/<string:category_name>')
+def showCategory(category_name):
+    session = createDbSession()
+    category = session.query(Category).filter_by(name=category_name)
+    categoryId = category.id
+    items = session.query(Item).filter_by(category_id=categoryId).all()
+    return render_template('category_items.html', items=items)
 
 
 if __name__ == '__main__':
