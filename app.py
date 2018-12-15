@@ -14,22 +14,27 @@ def createDbSession():
     session = DBSession()
     return session
 
+# Main route/ Root route
 @app.route('/')
 def mainPage():
     session = createDbSession()
     category = session.query(Category).all()
-
-    # items = session.query(MenuItem).filter_by(restaurant_id=restaurant.id)
     return render_template('main.html', categories=category)
 
-@app.route('/catalog/<string:category_name>')
-def showCategory(category_name):
+# Show Items in Category
+@app.route('/catalog/<int:category_id>')
+def showCategory(category_id):
     session = createDbSession()
-    category = session.query(Category).filter_by(name=category_name)
-    categoryId = category.id
-    items = session.query(Item).filter_by(category_id=categoryId).all()
+    category = session.query(Category).filter_by(id=category_id)
+    items = session.query(Item).filter_by(category_id=category_id).all()
     return render_template('category_items.html', items=items)
 
+# Show Item Page
+@app.route('/catalog/<int:category_id>/<int:item_id>')
+def showItem(category_id, item_id):
+    session = createDbSession()
+    item = session.query(Item).filter_by(id=item_id).first()
+    return render_template('item_page.html', item=item)
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
