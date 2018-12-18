@@ -60,6 +60,25 @@ def editItem(category_id, item_id):
     categories = session.query(Category).all()
     return render_template('item_edit_page.html', item=item, categories=categories)
 
+# Delete Item Page
+@app.route('/catalog/<int:category_id>/<int:item_id>/delete', methods=['GET','POST'])
+def deleteItem(category_id, item_id):
+    session = createDbSession()
+    
+    if request.method == 'GET':
+        item = session.query(Item).filter_by(id=item_id).first()
+        return render_template('item_delete_page.html', item=item)
+
+    elif request.method == 'POST':
+        try:
+            item = session.query(Item).filter_by(id=item_id).first()
+            session.delete(item)
+            session.commit()
+        except Exception as e:
+            print('Failed to delete {itemName}. Error: {error}'.format(itemName=item.name, error=e))
+            return redirect(url_for('/'))
+
+
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True
