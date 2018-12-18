@@ -21,21 +21,40 @@ def mainPage():
     category = session.query(Category).all()
     return render_template('main.html', categories=category)
 
-# Show Items in Category
-@app.route('/catalog/<int:category_id>')
-def showCategory(category_id):
+# Show Create Page
+@app.route('/catalog/create', methods=['GET','POST'])
+def createItem():
     session = createDbSession()
-    category = session.query(Category).filter_by(id=category_id)
+    if request.method == 'GET':
+        categories = session.query(Category).all()
+        return render_template('item_create_page.html', categories=categories)
+    
+
+# Show Category Items
+@app.route('/catalog/<int:category_id>')
+def showCategoryItems(category_id):
+    session = createDbSession()
     items = session.query(Item).filter_by(category_id=category_id).all()
     return render_template('category_items.html', items=items)
 
-# Show and Create Item Page
+
+# Show Item Page
 @app.route('/catalog/<int:category_id>/<int:item_id>', methods= ["GET","POST"])
-def interactItem(category_id, item_id):
+def showItem(category_id, item_id):
     session = createDbSession()
     if request.method == "GET":
         item = session.query(Item).filter_by(id=item_id).first()
         return render_template('item_page.html', item=item)
+
+
+# Show Item Edit Page
+@app.route('/catalog/<int:category_id>/<int:item_id>/edit', methods=['GET', 'POST'])
+def editItem(category_id, item_id):
+    session = createDbSession()
+    if request.method == 'GET':
+        item = session.query(Item).filter_by(id=item_id).first()
+        categories = session.query(Category).all()
+        return render_template('item_edit_page.html', item=item, categories=categories)
     elif request.method == "POST":
         try:
             itemToUpdate = session.query(Item).filter_by(id=item_id).first()
@@ -51,14 +70,6 @@ def interactItem(category_id, item_id):
         except Exception as e:
             print("Error {error}".format(error=e))
             return url_for("interactItem", category_id=category_id, item_id= item_id)
-
-# Show Item Edit Page
-@app.route('/catalog/<int:category_id>/<int:item_id>/edit')
-def editItem(category_id, item_id):
-    session = createDbSession()
-    item = session.query(Item).filter_by(id=item_id).first()
-    categories = session.query(Category).all()
-    return render_template('item_edit_page.html', item=item, categories=categories)
 
 # Delete Item Page
 @app.route('/catalog/<int:category_id>/<int:item_id>/delete', methods=['GET','POST'])
