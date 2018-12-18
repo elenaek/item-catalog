@@ -16,6 +16,7 @@ def createDbSession():
 
 # Main route/ Root route
 @app.route('/')
+@app.route('/catalog')
 def mainPage():
     session = createDbSession()
     category = session.query(Category).all()
@@ -28,6 +29,20 @@ def createItem():
     if request.method == 'GET':
         categories = session.query(Category).all()
         return render_template('item_create_page.html', categories=categories)
+    elif request.method == 'POST':
+        try:
+            itemToCreate = Item(name=request.form.get("name"), description=request.form.get("description"), category_id = request.form.get("category"))
+            if itemToCreate.name is not None and itemToCreate.description is not None and itemToCreate.category_id is not None:
+                session.add(itemToCreate)
+                session.commit()
+                item = session.query(Item).filter_by(name=itemToCreate.name).first()
+                return redirect(url_for("showItem",category_id=itemToCreate.category_id, item_id=item.id))
+            else:
+                print("Form invalid, fields all need to be filled")
+                return redirect("/")
+        except Exception as e:
+            print("Error {error}".format(error=e))
+            return redirect('/')
     
 
 # Show Category Items
