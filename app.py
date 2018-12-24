@@ -22,6 +22,14 @@ def mainPage():
     category = session.query(Category).all()
     return render_template('main.html', categories=category)
 
+
+# JSON Route (Items Index Route)
+@app.route('/v1/catalog/items')
+def jsonCatalog():
+    session = createDbSession()
+    items = session.query(Item).all()
+    return jsonify(CatalogItems=[item.serialize for item in items])
+
 # Show Create Page
 @app.route('/catalog/create', methods=['GET','POST'])
 def createItem():
