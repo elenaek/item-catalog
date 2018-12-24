@@ -16,7 +16,7 @@ def createDbSession():
 
 # Main route/ Root route
 @app.route('/')
-@app.route('/catalog')
+@app.route('/catalog/')
 def mainPage():
     session = createDbSession()
     category = session.query(Category).all()
@@ -24,14 +24,14 @@ def mainPage():
 
 
 # JSON Route (Items Index Route)
-@app.route('/v1/catalog/items')
+@app.route('/v1/catalog/items/')
 def jsonCatalog():
     session = createDbSession()
     items = session.query(Item).all()
     return jsonify(CatalogItems=[item.serialize for item in items])
 
 # Show Create Page
-@app.route('/catalog/create', methods=['GET','POST'])
+@app.route('/catalog/create/', methods=['GET','POST'])
 def createItem():
     session = createDbSession()
     if request.method == 'GET':
@@ -54,7 +54,7 @@ def createItem():
     
 
 # Show Category Items
-@app.route('/catalog/<int:category_id>')
+@app.route('/catalog/<int:category_id>/')
 def showCategoryItems(category_id):
     session = createDbSession()
     items = session.query(Item).filter_by(category_id=category_id).all()
@@ -62,7 +62,7 @@ def showCategoryItems(category_id):
 
 
 # Show Item Page
-@app.route('/catalog/<int:category_id>/<int:item_id>', methods= ["GET","POST"])
+@app.route('/catalog/<int:category_id>/<int:item_id>/', methods= ["GET","POST"])
 def showItem(category_id, item_id):
     session = createDbSession()
     if request.method == "GET":
@@ -71,7 +71,7 @@ def showItem(category_id, item_id):
 
 
 # Show Item Edit Page
-@app.route('/catalog/<int:category_id>/<int:item_id>/edit', methods=['GET', 'POST'])
+@app.route('/catalog/<int:category_id>/<int:item_id>/edit/', methods=['GET', 'POST'])
 def editItem(category_id, item_id):
     session = createDbSession()
     if request.method == 'GET':
@@ -87,15 +87,15 @@ def editItem(category_id, item_id):
             if itemToUpdate.name is not None and itemToUpdate.description is not None and itemToUpdate.category_id is not None:
                 session.add(itemToUpdate)
                 session.commit()
-                return redirect(url_for("interactItem",category_id=itemToUpdate.category_id, item_id=item_id))
+                return redirect(url_for("showItem",category_id=itemToUpdate.category_id, item_id=item_id))
             else:
                 return redirect("/")
         except Exception as e:
             print("Error {error}".format(error=e))
-            return url_for("interactItem", category_id=category_id, item_id= item_id)
+            return url_for("showItem", category_id=category_id, item_id= item_id)
 
 # Delete Item Page
-@app.route('/catalog/<int:category_id>/<int:item_id>/delete', methods=['GET','POST'])
+@app.route('/catalog/<int:category_id>/<int:item_id>/delete/', methods=['GET','POST'])
 def deleteItem(category_id, item_id):
     session = createDbSession()
     
@@ -108,6 +108,7 @@ def deleteItem(category_id, item_id):
             item = session.query(Item).filter_by(id=item_id).first()
             session.delete(item)
             session.commit()
+            return redirect(url_for('showCategoryItems', category_id=category_id))
         except Exception as e:
             print('Failed to delete {itemName}. Error: {error}'.format(itemName=item.name, error=e))
             return redirect(url_for('/'))
