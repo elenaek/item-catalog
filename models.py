@@ -10,6 +10,9 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String(32), index=True)
     password = Column(String(64))
+    email = Column(String(20), nullable=False)
+    picture = Column(String(250))
+
 
     def hash_password(self, password):
         self.password = pwd_context.encrypt(password)
@@ -21,7 +24,9 @@ class User(Base):
     def serialize(self):
 	    """Return object data in easily serializeable format"""
 	    return {
-	    'username' : self.username
+	    'username' : self.username,
+        'email' : self.email,
+        'picture' : self.picture
 	        }
 
 
@@ -50,7 +55,8 @@ class Item(Base):
         """Return object data in easily serializeable format"""
         return {
         'name' : self.name,
-        'description' : self.description
+        'description' : self.description,
+        'owner_id' : self.owner_id
             }
 
 

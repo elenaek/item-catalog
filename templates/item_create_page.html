@@ -1,6 +1,7 @@
 <html>
   <head> </head>
   <body>
+      {% include "header.html" %}
       <h1>Create Item</h1>
       <form action="{{url_for("createItem")}}" method="POST">
         <label for="name">Name</label>
