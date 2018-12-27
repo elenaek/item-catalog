@@ -48,7 +48,7 @@ from flask import make_response
 import requests
 from functools import wraps
 
-
+# DB init
 engine = create_engine('sqlite:///itemCatalog.db')
 Base.metadata.bind = engine
 
