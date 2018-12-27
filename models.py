@@ -55,8 +55,7 @@ class Item(Base):
         """Return object data in easily serializeable format"""
         return {
         'name' : self.name,
-        'description' : self.description,
-        'owner_id' : self.owner_id
+        'description' : self.description
             }
 
 

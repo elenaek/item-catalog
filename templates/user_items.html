@@ -3,8 +3,9 @@
   <body>
       {% include "header.html" %}
       <div class="container">
-        <h1>{{category.name}}</h1>
+        <h1>{{user.username}}'s Items</h1>
         <hr>
+        <p><a href='{{url_for('createItem')}}' class="btn btn-lg btn-primary main-create-btn">Create Item</a></p>
         <div class="list-group">
             {% for item in items %}
             <a href="{{url_for("showItem",category_id=item.category_id, item_id=item.id)}}" class="list-group-item">

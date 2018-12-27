@@ -2,29 +2,50 @@
   <head> </head>
   <body>
     {% include "header.html" %}
-    <div class = 'flash'>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        
-      <ul>
-        {% for message in messages %}
-            <li> <strong> {{ message }} </strong> </li>
-        {% endfor %}
-      </ul>
+    {% block content %}
+    <div class="container">
+      {% if 'username' not in session %}
+      <div class="jumbotron">
+        <h1>Item Catalog</h1>
+        <p>This is an app for catalogging items. You can create items by logging in using your Google+ account!</p>
+        <p><a href='{{url_for('showLogin')}}' class="btn btn-lg btn-primary">Login</a></p>
+      </div>
       {% endif %}
-      {% endwith %}
-</div>
-    <h1>Categories</h1>
-    <ul>
-      {% for category in categories %}
-      <li>
-        <strong><a href='{{ url_for('showCategoryItems', category_id=category.id)}}'>{{category.name}}</a></strong>
-      </li>
-      {% endfor %}
-    </ul>
+      <div class="row">
+        <div class="col-xs-6 container">
+            <h1>Categories</h1>
+            <hr>
+            <div class="list-group">
+                    {% for category in categories %}
+                      <a href='{{ url_for('showCategoryItems', category_id=category.id)}}' class="list-group-item">{{category.name}}</a>
+                    {% endfor %}
+            </div>
 
-    <form action='/catalog/create' method="GET">
-        <input type="submit" value="Create Item">
-    </form>
+        </div>
+        <div class="col-xs-6 container">
+            <h1>Recently Added Items</h1>
+            <hr>
+            {% if 'username' in session %}
+            <p><a href='{{url_for('createItem')}}' class="btn btn-lg btn-primary main-create-btn" style="width:100%">Create Item</a></p>
+            {% endif %}
+            <div class="list-group">
+              {% for item in items %}
+                <a href="{{url_for("showItem",category_id=item.category_id, item_id=item.id)}}" class="list-group-item">
+                  <h4 class="list-group-item-heading">{{item.name}}</h4>
+                  <p class="list-group-item-text">
+                    {{item.description}}
+                  </p>
+                </a>
+              {% endfor %} 
+              </br>
+            </div>
+        </div>
+      </div>
+    
+
+
+
+</div>
+    {% endblock %}
   </body>
 </html>

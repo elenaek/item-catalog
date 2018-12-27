@@ -1,19 +1,26 @@
 <html>
-    <head>
-            <link rel="stylesheet" type="text/css" href="semantic/dist/semantic.min.css">
-            <script
-              src="https://code.jquery.com/jquery-3.1.1.min.js"
-              integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
-              crossorigin="anonymous"></script>
-            <script src="semantic/dist/semantic.min.js"></script>        
+    <head>   
+            {% extends "bootstrap/base.html" %}
+            <title>Item Catalog</title>
     </head>
     <body>
-        <a href="{{url_for('mainPage')}}">Home</a>
-        {%if 'username' not in session %}
-        <a href="{{url_for('showLogin')}}">Login </a>
-        {% else %}
-        <b>{{session.username}}</b>
-        <a href="{{url_for('disconnect')}}">Logout </a>
-        {% endif %}
+            {% block navbar %}
+                {{nav.mynavbar.render()}}
+            {% endblock %}
+                {% block content %}
+                <div class = "container">
+            <div class = 'flash alert-alert-success'>
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                    
+                    {% for message in messages %}
+                        <p> <strong class='alert alert-success'> {{ message }} </strong> </p>
+                    {% endfor %}
+                  {% endif %}
+                  {% endwith %}
+            </div>
+        </div>
+    </br>
+            {% endblock %}
     </body>
 </html>

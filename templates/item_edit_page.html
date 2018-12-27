@@ -2,33 +2,37 @@
   <head> </head>
   <body>
     {% include "header.html" %}
-      <h1>{{item.name}}</h1>
-      <form action="{{url_for("editItem",category_id=item.category_id, item_id=item.id)}}" method="POST">
-        <label for="name">Name</label>
-      </br>
-        <input type="text" name="name" placeholder="{{item.name}}" value="{{item.name}}">
-      </br>
-        <label for="description">Description</label>
-      </br>
-        <textarea name="description" placeholder="{{item.description}}">{{item.description}}</textarea>
-    </br>
-        <label for="category">Category</label>
-    </br>
-        <select name="category">
-            {% for category in categories %}
-                {% if category.id == item.category_id %}
-                    <option value={{category.id}} selected>{{category.name}}</option>
-                {% else %}
-                    <option value="{{category.id}}">{{category.name}}</option>
-                {% endif %}
-            {% endfor %}
-        </select>
-    </br>
-        <input type="submit">
-      </form>
-      <form action="{{url_for("showItem",category_id=item.category_id, item_id=item.id)}}" method="GET">
-        <input type="submit" value="Cancel">
-    </form>
+      <div class="container">
+          <h1>{{item.name}}</h1>
+          <hr>
+          <form action="{{url_for("editItem",category_id=item.category_id, item_id=item.id)}}" method="POST">
+    <div class="input-group">
+                <label for="name" class="input-group-addon">Name</label>
+                <input type="text" name="name" placeholder="{{item.name}}" value="{{item.name}}" class="form-control">
+    </div>
+          </br>
+<div class="input-group">
+                <label for="description" class="input-group-addon">Description</label>
+                <textarea name="description" placeholder="{{item.description}}" row="5" class="form-control">{{item.description}}</textarea>
+</div>
+        </br>
+<div class="input-group">
+                <label for="category" class="input-group-addon">Category</label>
+                <select name="category" class="form-control">
+                    {% for category in categories %}
+                        {% if category.id == item.category_id %}
+                            <option value={{category.id}} selected>{{category.name}}</option>
+                        {% else %}
+                            <option value="{{category.id}}">{{category.name}}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+</div>
+        </br>
+            <input type="submit" class="btn btn-primary">
+            <a href="{{url_for("showItem",category_id=item.category_id, item_id=item.id)}}" class="btn btn-warning">Cancel</a>
+          </form>
+      </div>
       <script>
           function getSelectedOption(option){
             return option.options[option.selectedIndex].value;

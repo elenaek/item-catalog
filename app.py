@@ -1,6 +1,35 @@
 
 from flask import Flask, render_template, url_for, request, flash, redirect, jsonify
+from flask_bootstrap import Bootstrap
+from flask_nav import Nav
+from flask_nav.elements import Navbar, View, Subgroup
+
+nav = Nav()
+
+# Navbar for Web app
+@nav.navigation()
+def mynavbar():
+    if 'username' in login_session:
+        return Navbar(
+            'Item Catalog',
+            View('Home', 'mainPage'),
+            Subgroup(login_session['username'],
+                View('Create Item', 'createItem'),
+                View('My Items', 'showUserItems', user_id=getUserId(login_session['email'])),
+                View('Logout', 'disconnect')
+            )
+        )
+
+    return Navbar(
+        'Item Catalog',
+        View('Home', 'mainPage'),
+        View('Login', 'showLogin')
+    )
+
+
 app = Flask(__name__)
+Bootstrap(app)
+nav.init_app(app)
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -23,6 +52,7 @@ from functools import wraps
 engine = create_engine('sqlite:///itemCatalog.db')
 Base.metadata.bind = engine
 
+# Get G+ API CID and CSECRET from client_secrets.json
 CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
 
 # Decorator for requiring login
@@ -167,7 +197,7 @@ def gconnect():
         login_session['user_id'] = user_id
 
     flash("You are now logged in as {username}".format(username=login_session['username']))
-    return "You've sucessfully logged in as: {username}".format(username=login_session['username'])
+    return "You've sucessfully logged in as: <strong>{username}</strong>".format(username=login_session['username'])
 
 # Google Disconnect Route
 @app.route('/gdisconnect')
@@ -185,9 +215,6 @@ def gdisconnect():
         print("i'm here")
         #Reset user's session
         del login_session['gplus_id']
-        # del login_session['username']
-        # del login_session['email']
-        # del login_session['picture']
         response = make_response(json.dumps('Successfully disconnected!'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -204,7 +231,8 @@ def gdisconnect():
 def mainPage():
     session = createDbSession()
     category = session.query(Category).all()
-    return render_template('main.html', categories=category)
+    items = session.query(Item).limit(5)
+    return render_template('main.html', categories=category, items=items)
 
 
 # JSON Route (Items Index Route)
@@ -219,12 +247,16 @@ def jsonCatalog():
 @login_required
 def createItem():
     session = createDbSession()
+    user = session.query(User).filter_by(id=getUserId(login_session.get("email"))).first()
     if request.method == 'GET':
         categories = session.query(Category).all()
-        return render_template('item_create_page.html', categories=categories)
+        return render_template('item_create_page.html', categories=categories, user=user)
     elif request.method == 'POST':
         try:
-            itemToCreate = Item(name=request.form.get("name"), description=request.form.get("description"), category_id = request.form.get("category"), owner_id=getUserId(login_session["email"]))
+            itemToCreate = Item(name=request.form.get("name"), 
+            description=request.form.get("description"), 
+            category_id = request.form.get("category"), 
+            owner_id=getUserId(login_session["email"]))
             if itemToCreate.name is not None and itemToCreate.description is not None and itemToCreate.category_id is not None:
                 session.add(itemToCreate)
                 session.commit()
@@ -243,19 +275,30 @@ def createItem():
 def showCategoryItems(category_id):
     session = createDbSession()
     items = session.query(Item).filter_by(category_id=category_id).all()
-    return render_template('category_items.html', items=items)
+    category = session.query(Category).filter_by(id=category_id).first()
+    return render_template('category_items.html', items=items, category=category)
 
+
+# Show User Items
+@app.route('/catalog/items/<int:user_id>/')
+@login_required
+def showUserItems(user_id):
+    session = createDbSession()
+    items = session.query(Item).filter_by(owner_id=user_id).all()
+    user = session.query(User).filter_by(id=user_id).one()
+    return render_template("user_items.html", items=items, user=user)
 
 # Show Item Page
 @app.route('/catalog/<int:category_id>/<int:item_id>/', methods= ["GET","POST"])
 def showItem(category_id, item_id):
     session = createDbSession()
     item = session.query(Item).filter_by(id=item_id).first()
+    category = session.query(Category).filter_by(id=category_id).first()
     print("{email} : {id}".format(email=getUserId(login_session.get("email")), id = item.owner_id))
     if request.method == "GET" and isOwner(getUserId(login_session.get("email")), item.owner_id):
-        return render_template('item_page.html', item=item)
+        return render_template('item_page.html', item=item, category=category)
     else:
-        return render_template("public_item_page.html", item=item)
+        return render_template("public_item_page.html", item=item, category=category)
 
 
 # Show Item Edit Page
@@ -307,6 +350,6 @@ def deleteItem(category_id, item_id):
 # ----------------------------------Route Handlers End--------------------------------------
 
 if __name__ == '__main__':
-    app.secret_key = 'super_secret_key'
+    app.secret_key = 'super_secret_key_that_is_not_so_secret_now'
     app.debug = True
     app.run(host='0.0.0.0', port=5000)

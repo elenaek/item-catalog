@@ -2,26 +2,34 @@
   <head> </head>
   <body>
       {% include "header.html" %}
+      <div class="container">
       <h1>Create Item</h1>
+      <hr>
       <form action="{{url_for("createItem")}}" method="POST">
-        <label for="name">Name</label>
+        <div class="input-group">
+        <label for="name" class="input-group-addon">Name</label>
+        <input type="text" name="name" placeholder="Enter an item name" class="form-control">
+        </div>
       </br>
-        <input type="text" name="name" placeholder="Enter an item name">
+      <div class="input-group">
+        <label for="description" class="input-group-addon">Description</label>
+        <textarea name="description" rows="5" placeholder="Enter an item description" class="form-control"></textarea>
+      </div>
       </br>
-        <label for="description">Description</label>
-      </br>
-        <textarea name="description" placeholder="Enter an item description"></textarea>
+        <div class="input-group">
+            <label for="category" class="input-group-addon">Category</label>
+            <select name="category" class="form-control">
+                {% for category in categories %}
+                        <option value="{{category.id}}">{{category.name}}</option>
+                {% endfor %}
+            </select>
+        </div>
+
     </br>
-        <label for="category">Category</label>
-    </br>
-        <select name="category">
-            {% for category in categories %}
-                    <option value="{{category.id}}">{{category.name}}</option>
-            {% endfor %}
-        </select>
-    </br>
-        <input type="submit">
-      </form>
+        <input type="submit" class="btn btn-primary">
+        <a href="{{url_for("showUserItems",user_id=user.id)}}" class="btn btn-warning">Cancel</a>  
+    </form>
+  </div>
       <script>
           function getSelectedOption(option){
             return option.options[option.selectedIndex].value;
