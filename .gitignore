@@ -1,4 +1,4 @@
-/templates/login_options.html
-client_secrets.json
+/templates/login_options_filled.html
+client_secrets_filled.json
 models.pyc
 itemCatalog.db
