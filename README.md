@@ -2,6 +2,9 @@
 - A web app for cataloging items
 - Built using Python/Flask/Jinja/Bootstrap/SQLAlchemy/Google OAuth2 via G+ API
 
+# Demo
+- I have a demo hosted here: https://catalog.keane.app/catalog/
+
 # Prerequisites
 - Vagrant VM up and running
 - Google+ API Project credentials which can be created at [Google Dev Console](https://console.developers.google.com/)
