@@ -4,6 +4,7 @@
 
 # Demo
 - I have a demo hosted here: https://catalog.keane.app/catalog/
+- Demo is hosted on AWS Lightsail, Apache2, as WSGI app.
 
 # Prerequisites
 - Vagrant VM up and running
